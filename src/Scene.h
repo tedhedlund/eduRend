@@ -45,6 +45,7 @@ public:
 	virtual void WindowResize(
 		int window_width,
 		int window_height);
+	
 };
 
 class OurTestScene : public Scene
@@ -75,11 +76,20 @@ class OurTestScene : public Scene
 	Camera* camera;
 
 	QuadModel* quad;
+	Cube* cube;
+	Cube* cube1;
+	Cube* cube2;
 	OBJModel* sponza;
+	OBJModel* spaceship;
+	
 
 	// Model-to-world transformation matrices
 	mat4f Msponza;
+	mat4f Mcube;
+	mat4f Mcube1;
+	mat4f Mcube2;
 	mat4f Mquad;
+	mat4f Mspaceship;
 
 	// World-to-view matrix
 	mat4f Mview;
