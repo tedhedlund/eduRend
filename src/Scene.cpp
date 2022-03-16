@@ -1,5 +1,7 @@
 
 #include "Scene.h"
+#include <cmath>
+#include <chrono>
 
 Scene::Scene(
 	ID3D11Device* dxdevice,
@@ -47,7 +49,11 @@ void OurTestScene::Init()
 
 	// Create objects
 	quad = new QuadModel(dxdevice, dxdevice_context);
+	cube = new Cube(dxdevice, dxdevice_context);
+	cube1 = new Cube(dxdevice, dxdevice_context);
+	cube2 = new Cube(dxdevice, dxdevice_context);
 	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", dxdevice, dxdevice_context);
+	spaceship = new OBJModel("assets/Spaceship/spaceship.obj", dxdevice, dxdevice_context);
 }
 
 //
@@ -58,6 +64,8 @@ void OurTestScene::Update(
 	float dt,
 	InputHandler* input_handler)
 {
+	
+
 	// Basic camera control
 	if (input_handler->IsKeyPressed(Keys::Up) || input_handler->IsKeyPressed(Keys::W))
 		camera->move({ 0.0f, 0.0f, -camera_vel * dt });
@@ -68,6 +76,11 @@ void OurTestScene::Update(
 	if (input_handler->IsKeyPressed(Keys::Left) || input_handler->IsKeyPressed(Keys::A))
 		camera->move({ -camera_vel * dt, 0.0f, 0.0f });
 
+	float sensitivty = 0.5f * dt;
+	long mousedx = input_handler->GetMouseDeltaX();
+	long mousedy = input_handler->GetMouseDeltaY();
+	camera->pitch -= mousedy * sensitivty;
+	camera->yaw -= mousedx * sensitivty;
 	// Now set/update object transformations
 	// This can be done using any sequence of transformation matrices,
 	// but the T*R*S order is most common; i.e. scale, then rotate, and then translate.
@@ -79,10 +92,28 @@ void OurTestScene::Update(
 		mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
 		mat4f::scaling(1.5, 1.5, 1.5);				// Scale uniformly to 150%
 
+	Mcube = mat4f::translation(5, 0, 0) *
+		mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *
+		mat4f::scaling(2, 2, 2);
+	
+//	m4f MCube_T = mat4f::translation(Mcube.m14, Mcube.m24, Mcube.m34);
+	Mcube1 = Mcube.translation(5, 0, 0) * Mcube.scaling(2, 2, 2) * mat4f::translation(std::cos(angle) * 1.5, std::sin(angle) * 1.5, 0) *
+		mat4f::rotation(0.0f, 0.0f, 0.0f) *
+		mat4f::scaling(0.5, 0.5, 0.5);
+
+	Mcube2 = Mcube1 * mat4f::translation(std::cos(angle) * 1.5, std::sin(angle) * 1.5, 1) *
+		mat4f::rotation(angle, 1.0f, 0.0f, 0.0f) *
+		mat4f::scaling(0.5, 0.5, 0.5);
+
+
 	// Sponza model-to-world transformation
 	Msponza = mat4f::translation(0, -5, 0) *		 // Move down 5 units
 		mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) * // Rotate pi/2 radians (90 degrees) around y
 		mat4f::scaling(0.05f);						 // The scene is quite large so scale it down to 5%
+
+	Mspaceship = mat4f::translation(-7, 0, 0) *
+		mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *
+		mat4f::scaling(0.2f, 0.2f, 0.2f);
 
 	// Increment the rotation angle.
 	angle += angle_vel * dt;
@@ -108,10 +139,22 @@ void OurTestScene::Render()
 	// Obtain the matrices needed for rendering from the camera
 	Mview = camera->get_WorldToViewMatrix();
 	Mproj = camera->get_ProjectionMatrix();
-
+	
 	// Load matrices + the Quad's transformation to the device and render it
 	UpdateTransformationBuffer(Mquad, Mview, Mproj);
 	quad->Render();
+
+	UpdateTransformationBuffer(Mcube, Mview, Mproj);
+	cube->Render();
+
+	UpdateTransformationBuffer(Mcube1, Mview, Mproj);
+	cube1->Render();
+
+	UpdateTransformationBuffer(Mcube2, Mview, Mproj);
+	cube2->Render();
+	
+	UpdateTransformationBuffer(Mspaceship, Mview, Mproj);
+	spaceship->Render();
 
 	// Load matrices + Sponza's transformation to the device and render it
 	UpdateTransformationBuffer(Msponza, Mview, Mproj);
@@ -121,6 +164,10 @@ void OurTestScene::Render()
 void OurTestScene::Release()
 {
 	SAFE_DELETE(quad);
+	SAFE_DELETE(cube);
+	SAFE_DELETE(cube1);
+	SAFE_DELETE(cube2);
+	SAFE_DELETE(spaceship);
 	SAFE_DELETE(sponza);
 	SAFE_DELETE(camera);
 

@@ -26,7 +26,9 @@ public:
 	// zFar should depend on the size of the scene
 	// This range should be kept as tight as possibly to improve
 	// numerical precision in the z-buffer
-	float zNear, zFar;	
+	float zNear, zFar;
+	float yaw = -90;
+	float pitch = 0.0f;
 						
 	vec3f position;
 
@@ -34,7 +36,7 @@ public:
 		float vfov,
 		float aspect,
 		float zNear,
-		float zFar):
+		float zFar) :		
 		vfov(vfov), aspect(aspect), zNear(zNear), zFar(zFar)
 	{
 		position = {0.0f, 0.0f, 0.0f};
@@ -64,8 +66,9 @@ public:
 		// World-to-View then is the inverse of T(p)*R;
 		//		inverse(T(p)*R) = inverse(R)*inverse(T(p)) = transpose(R)*T(-p)
 		// Since now there is no rotation, this matrix is simply T(-p)
-
-		return mat4f::translation(-position);
+		mat4f rotationmatrix = mat4f::rotation(0, yaw, pitch);
+		rotationmatrix.transpose();
+		return rotationmatrix * mat4f::translation(-position);
 	}
 
 	// Matrix transforming from View space to Clip space
