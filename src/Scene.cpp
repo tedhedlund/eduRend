@@ -65,22 +65,42 @@ void OurTestScene::Update(
 	InputHandler* input_handler)
 {
 	
+	float sensitivty = 0.5f * dt;
+	long mousedx = input_handler->GetMouseDeltaX();
+	long mousedy = input_handler->GetMouseDeltaY();
+
+	camera->pitch -= mousedy * sensitivty;
+	camera->yaw -= mousedx * sensitivty;
+	
+	if(camera->pitch > PI / 2) 
+	{
+		camera->pitch = PI / 2;
+	}
+	else if(camera->pitch < -PI / 2)
+	{
+		camera->pitch = -PI / 2;
+	}
 
 	// Basic camera control
-	if (input_handler->IsKeyPressed(Keys::Up) || input_handler->IsKeyPressed(Keys::W))
+	/*if (input_handler->IsKeyPressed(Keys::Up) || input_handler->IsKeyPressed(Keys::W))
 		camera->move({ 0.0f, 0.0f, -camera_vel * dt });
 	if (input_handler->IsKeyPressed(Keys::Down) || input_handler->IsKeyPressed(Keys::S))
 		camera->move({ 0.0f, 0.0f, camera_vel * dt });
 	if (input_handler->IsKeyPressed(Keys::Right) || input_handler->IsKeyPressed(Keys::D))
 		camera->move({ camera_vel * dt, 0.0f, 0.0f });
 	if (input_handler->IsKeyPressed(Keys::Left) || input_handler->IsKeyPressed(Keys::A))
-		camera->move({ -camera_vel * dt, 0.0f, 0.0f });
+		camera->move({ -camera_vel * dt, 0.0f, 0.0f });*/
+	
+	if (input_handler->IsKeyPressed(Keys::Up) || input_handler->IsKeyPressed(Keys::W))
+		camera->moveForward(camera_vel, dt);
+	if (input_handler->IsKeyPressed(Keys::Down) || input_handler->IsKeyPressed(Keys::S))
+		camera->moveBackward(camera_vel, dt);
+	if (input_handler->IsKeyPressed(Keys::Right) || input_handler->IsKeyPressed(Keys::D))
+		camera->moveLeft(camera_vel, dt);
+	if (input_handler->IsKeyPressed(Keys::Left) || input_handler->IsKeyPressed(Keys::A))
+		camera->moveRight(camera_vel, dt);
 
-	float sensitivty = 0.5f * dt;
-	long mousedx = input_handler->GetMouseDeltaX();
-	long mousedy = input_handler->GetMouseDeltaY();
-	camera->pitch -= mousedy * sensitivty;
-	camera->yaw -= mousedx * sensitivty;
+
 	// Now set/update object transformations
 	// This can be done using any sequence of transformation matrices,
 	// but the T*R*S order is most common; i.e. scale, then rotate, and then translate.
