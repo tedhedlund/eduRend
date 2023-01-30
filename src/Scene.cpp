@@ -31,6 +31,8 @@ OurTestScene::OurTestScene(
 { 
 	InitTransformationBuffer();
 	// + init other CBuffers
+	InitLightAndCameraBuffer();
+	InitPhongColorAndShininessBuffer();
 }
 
 //
@@ -155,6 +157,8 @@ void OurTestScene::Render()
 {
 	// Bind transformation_buffer to slot b0 of the VS
 	dxdevice_context->VSSetConstantBuffers(0, 1, &transformation_buffer);
+	dxdevice_context->PSSetConstantBuffers(0, 1, &lightandcamera_buffer);
+	dxdevice_context->PSSetConstantBuffers(1, 1, &phongcolorandshininess_buffer);
 
 	// Obtain the matrices needed for rendering from the camera
 	Mview = camera->get_WorldToViewMatrix();
@@ -179,6 +183,8 @@ void OurTestScene::Render()
 	// Load matrices + Sponza's transformation to the device and render it
 	UpdateTransformationBuffer(Msponza, Mview, Mproj);
 	sponza->Render();
+	
+	UpdateLightAndCameraBuffer(vec4f{ 0, 5, 0, 0 }, camera->position.xyz0());
 }
 
 void OurTestScene::Release()
@@ -193,6 +199,8 @@ void OurTestScene::Release()
 
 	SAFE_RELEASE(transformation_buffer);
 	// + release other CBuffers
+	SAFE_RELEASE(lightandcamera_buffer);
+	SAFE_RELEASE(phongcolorandshininess_buffer);
 }
 
 void OurTestScene::WindowResize(
@@ -231,4 +239,52 @@ void OurTestScene::UpdateTransformationBuffer(
 	matrix_buffer_->WorldToViewMatrix = WorldToViewMatrix;
 	matrix_buffer_->ProjectionMatrix = ProjectionMatrix;
 	dxdevice_context->Unmap(transformation_buffer, 0);
+}
+
+void OurTestScene::InitLightAndCameraBuffer() 
+{
+	HRESULT hr;
+	D3D11_BUFFER_DESC LightCameraBuffer_desc = { 0 };
+	LightCameraBuffer_desc.Usage = D3D11_USAGE_DYNAMIC;
+	LightCameraBuffer_desc.ByteWidth = sizeof(TransformationBuffer);
+	LightCameraBuffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	LightCameraBuffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	LightCameraBuffer_desc.MiscFlags = 0;
+	LightCameraBuffer_desc.StructureByteStride = 0;
+	ASSERT(hr = dxdevice->CreateBuffer(&LightCameraBuffer_desc, nullptr, &lightandcamera_buffer));
+}
+
+void OurTestScene::UpdateLightAndCameraBuffer(
+	vec4f lightposition,
+	vec4f cameraposition)
+{
+	D3D11_MAPPED_SUBRESOURCE resource;
+	dxdevice_context->Map(lightandcamera_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	LightandCameraBuffer* lightcamera_buffer = (LightandCameraBuffer*)resource.pData;
+	lightcamera_buffer->lightposition = lightposition;
+	lightcamera_buffer->cameraposition = cameraposition;	
+	dxdevice_context->Unmap(lightandcamera_buffer, 0);
+
+}
+
+void OurTestScene::InitPhongColorAndShininessBuffer() 
+{
+	HRESULT hr;
+	D3D11_BUFFER_DESC PhongColorAndShininessBuffer_desc = { 0 };
+	PhongColorAndShininessBuffer_desc.Usage = D3D11_USAGE_DYNAMIC;
+	PhongColorAndShininessBuffer_desc.ByteWidth = sizeof(TransformationBuffer);
+	PhongColorAndShininessBuffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	PhongColorAndShininessBuffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	PhongColorAndShininessBuffer_desc.MiscFlags = 0;
+	PhongColorAndShininessBuffer_desc.StructureByteStride = 0;
+	ASSERT(hr = dxdevice->CreateBuffer(&PhongColorAndShininessBuffer_desc, nullptr, &phongcolorandshininess_buffer));
+}
+
+void OurTestScene::UpdatePhongColorAndShininessBuffer(vec4f colorandshine) 
+{
+	D3D11_MAPPED_SUBRESOURCE resource;
+	dxdevice_context->Map(phongcolorandshininess_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	PhongColorAndShininessBuffer* phong_buffer = (PhongColorAndShininessBuffer*)resource.pData;
+	phong_buffer->colorandshine = colorandshine;	
+	dxdevice_context->Unmap(phongcolorandshininess_buffer, 0);
 }

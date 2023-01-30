@@ -57,6 +57,9 @@ class OurTestScene : public Scene
 	// CBuffer for transformation matrices
 	ID3D11Buffer* transformation_buffer = nullptr;
 	// + other CBuffers
+	ID3D11Buffer* lightandcamera_buffer = nullptr; //Updated per frame
+	ID3D11Buffer* phongcolorandshininess_buffer = nullptr; //Updated per frame and object
+
 
 	// 
 	// CBuffer client-side definitions
@@ -68,6 +71,17 @@ class OurTestScene : public Scene
 		mat4f ModelToWorldMatrix;
 		mat4f WorldToViewMatrix;
 		mat4f ProjectionMatrix;
+	};
+
+	struct LightandCameraBuffer 
+	{
+		vec4f lightposition;
+		vec4f cameraposition;
+	};
+
+	struct PhongColorAndShininessBuffer 
+	{
+		vec4f colorandshine;
 	};
 
 	//
@@ -108,6 +122,19 @@ class OurTestScene : public Scene
 		mat4f ModelToWorldMatrix,
 		mat4f WorldToViewMatrix,
 		mat4f ProjectionMatrix);
+
+	void InitLightAndCameraBuffer();
+
+	void UpdateLightAndCameraBuffer(
+		vec4f lightposition,
+		vec4f cameraposition
+	);
+
+	void InitPhongColorAndShininessBuffer();
+
+	void UpdatePhongColorAndShininessBuffer(
+		vec4f colorandshine
+	);
 
 public:
 	OurTestScene(
