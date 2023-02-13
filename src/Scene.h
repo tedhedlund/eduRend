@@ -58,7 +58,7 @@ class OurTestScene : public Scene
 	ID3D11Buffer* transformation_buffer = nullptr;
 	// + other CBuffers
 	ID3D11Buffer* lightandcamera_buffer = nullptr; //Updated per frame
-	ID3D11Buffer* phongcolorandshininess_buffer = nullptr; //Updated per frame and object
+	ID3D11Buffer* mtl_buffer = nullptr; //Updated per frame and object
 
 
 	// 
@@ -130,9 +130,9 @@ class OurTestScene : public Scene
 		vec4f cameraposition
 	);
 
-	void InitPhongColorAndShininessBuffer();
+	void InitMaterialBuffer();
 
-	void UpdatePhongColorAndShininessBuffer(
+	void UpdateMaterialBuffer(
 		vec4f colorandshine
 	);
 

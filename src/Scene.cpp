@@ -32,7 +32,7 @@ OurTestScene::OurTestScene(
 	InitTransformationBuffer();
 	// + init other CBuffers
 	InitLightAndCameraBuffer();
-	InitPhongColorAndShininessBuffer();
+	InitMaterialBuffer();
 }
 
 //
@@ -158,7 +158,7 @@ void OurTestScene::Render()
 	// Bind transformation_buffer to slot b0 of the VS
 	dxdevice_context->VSSetConstantBuffers(0, 1, &transformation_buffer);
 	dxdevice_context->PSSetConstantBuffers(0, 1, &lightandcamera_buffer);
-	dxdevice_context->PSSetConstantBuffers(1, 1, &phongcolorandshininess_buffer);
+	dxdevice_context->PSSetConstantBuffers(1, 1, &mtl_buffer);
 
 	// Obtain the matrices needed for rendering from the camera
 	Mview = camera->get_WorldToViewMatrix();
@@ -184,7 +184,7 @@ void OurTestScene::Render()
 	UpdateTransformationBuffer(Msponza, Mview, Mproj);
 	sponza->Render();
 	
-	UpdateLightAndCameraBuffer(vec4f{ 0, 5, 0, 0 }, camera->position.xyz0());
+	UpdateLightAndCameraBuffer(vec4f{ 5, 0, 0, 0 }, camera->position.xyz0());
 }
 
 void OurTestScene::Release()
@@ -200,7 +200,7 @@ void OurTestScene::Release()
 	SAFE_RELEASE(transformation_buffer);
 	// + release other CBuffers
 	SAFE_RELEASE(lightandcamera_buffer);
-	SAFE_RELEASE(phongcolorandshininess_buffer);
+	SAFE_RELEASE(mtl_buffer);
 }
 
 void OurTestScene::WindowResize(
@@ -267,7 +267,7 @@ void OurTestScene::UpdateLightAndCameraBuffer(
 
 }
 
-void OurTestScene::InitPhongColorAndShininessBuffer() 
+void OurTestScene::InitMaterialBuffer() 
 {
 	HRESULT hr;
 	D3D11_BUFFER_DESC PhongColorAndShininessBuffer_desc = { 0 };
@@ -277,14 +277,14 @@ void OurTestScene::InitPhongColorAndShininessBuffer()
 	PhongColorAndShininessBuffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	PhongColorAndShininessBuffer_desc.MiscFlags = 0;
 	PhongColorAndShininessBuffer_desc.StructureByteStride = 0;
-	ASSERT(hr = dxdevice->CreateBuffer(&PhongColorAndShininessBuffer_desc, nullptr, &phongcolorandshininess_buffer));
+	ASSERT(hr = dxdevice->CreateBuffer(&PhongColorAndShininessBuffer_desc, nullptr, &mtl_buffer));
 }
 
-void OurTestScene::UpdatePhongColorAndShininessBuffer(vec4f colorandshine) 
+void OurTestScene::UpdateMaterialBuffer(vec4f colorandshine) 
 {
 	D3D11_MAPPED_SUBRESOURCE resource;
-	dxdevice_context->Map(phongcolorandshininess_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	dxdevice_context->Map(mtl_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
 	PhongColorAndShininessBuffer* phong_buffer = (PhongColorAndShininessBuffer*)resource.pData;
 	phong_buffer->colorandshine = colorandshine;	
-	dxdevice_context->Unmap(phongcolorandshininess_buffer, 0);
+	dxdevice_context->Unmap(mtl_buffer, 0);
 }

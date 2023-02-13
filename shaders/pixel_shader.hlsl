@@ -29,9 +29,12 @@ float4 PS_main(PSIn input) : SV_Target
 	// The 4:th component is opacity and should be = 1	
 	/*return float4(input.Normal*0.5+0.5, 1);*/
 
-	float4 color = {255, 0, 0, 1};
+	float4 color = {0, 255, 0, 1};
 
-	return float4(lightposition);
+	
+
+
+	return float4(color);
 	
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
 	/*return float4(input.TexCoord, 0, 1);*/
