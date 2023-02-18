@@ -184,7 +184,7 @@ void OurTestScene::Render()
 	UpdateTransformationBuffer(Msponza, Mview, Mproj);
 	sponza->Render();
 	
-	UpdateLightAndCameraBuffer(vec4f{ 5, 0, 0, 0 }, camera->position.xyz0());
+	UpdateLightAndCameraBuffer(vec4f{ 0, 1000, 0, 0 }, camera->position.xyz0());
 }
 
 void OurTestScene::Release()

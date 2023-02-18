@@ -29,12 +29,27 @@ float4 PS_main(PSIn input) : SV_Target
 	// The 4:th component is opacity and should be = 1	
 	/*return float4(input.Normal*0.5+0.5, 1);*/
 
-	float4 color = {0, 255, 0, 1};
+	//ambient
+	float ambientStrenght = 0.1f;
+	float3 ambient = ambientStrenght * float3(1, 1, 1);
 
+	//diffuse
+	float3 norm = normalize(input.Normal);
+	float3 lightDir = normalize(lightposition.xyz - input.Pos.xyz);
+	float diff = max(dot(norm, lightDir), 0.0);
+	float3 diffuse = diff * float3(1, 1, 1);
+
+	//specular
+	float specularStrength = 0.5f;
+	float3 viewDir = normalize(cameraposition.xyz - input.Pos.xyz);
+	float3 reflectDir = reflect(-lightDir, norm);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+	float3 specular = specularStrength * spec * float3(1,1,1);
 	
+	float3 results = (ambient + diffuse + specular);
 
+	return float4(results, 1);
 
-	return float4(color);
 	
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
 	/*return float4(input.TexCoord, 0, 1);*/
