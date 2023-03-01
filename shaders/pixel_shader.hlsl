@@ -9,7 +9,7 @@ cbuffer LightAndCameraBuffer : register(b0)
 
 cbuffer PhongColorAndShininessBuffer : register(b1) 
 {
-	float4 colorandshine;
+	float4 colorandshine; //ambient, diffuse, specular, shininess
 }
 
 struct PSIn

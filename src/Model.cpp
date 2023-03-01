@@ -415,4 +415,8 @@ void Cube::Render() const
 
 	// Make the drawcall
 	dxdevice_context->DrawIndexed(nbr_indices, 0, 0);
+
 }
+
+
+

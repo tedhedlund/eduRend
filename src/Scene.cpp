@@ -3,6 +3,8 @@
 #include <cmath>
 #include <chrono>
 
+vec4f light = vec4f{ 0, 1000, 0, 0 };
+
 Scene::Scene(
 	ID3D11Device* dxdevice,
 	ID3D11DeviceContext* dxdevice_context,
@@ -148,6 +150,8 @@ void OurTestScene::Update(
 //		printf("fps %i\n", (int)(1.0f / dt));
 		fps_cooldown = 2.0;
 	}
+	
+	light.x += std::cos(angle) * 2;
 }
 
 //
@@ -164,6 +168,8 @@ void OurTestScene::Render()
 	Mview = camera->get_WorldToViewMatrix();
 	Mproj = camera->get_ProjectionMatrix();
 	
+	UpdateMaterialBuffer(vec4f(0,0,255,1));
+
 	// Load matrices + the Quad's transformation to the device and render it
 	UpdateTransformationBuffer(Mquad, Mview, Mproj);
 	quad->Render();
@@ -184,7 +190,8 @@ void OurTestScene::Render()
 	UpdateTransformationBuffer(Msponza, Mview, Mproj);
 	sponza->Render();
 	
-	UpdateLightAndCameraBuffer(vec4f{ 0, 1000, 0, 0 }, camera->position.xyz0());
+	UpdateLightAndCameraBuffer(light, camera->position.xyz0());
+	
 }
 
 void OurTestScene::Release()
