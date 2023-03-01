@@ -7,9 +7,13 @@ cbuffer LightAndCameraBuffer : register(b0)
 	float4 cameraposition;
 }
 
-cbuffer PhongColorAndShininessBuffer : register(b1) 
+cbuffer PhongColorAndShininessBuffer : register(b1)
 {
-	float4 colorandshine; //ambient, diffuse, specular, shininess
+	/*float4 colorandshine;*/ //ambient, diffuse, specular, shininess
+	float3 Ka;
+	float3 Kd;
+	float3 Ks;
+	float shininess;
 }
 
 struct PSIn
@@ -29,28 +33,47 @@ float4 PS_main(PSIn input) : SV_Target
 	// The 4:th component is opacity and should be = 1	
 	/*return float4(input.Normal*0.5+0.5, 1);*/
 
-	//ambient
-	float ambientStrenght = 0.1f;
-	float3 ambient = ambientStrenght * float3(1, 1, 1);
+	////ambient
+	//float ambientStrenght = 0.1f;
+	//float3 ambient = ambientStrenght * float3(1, 1, 1) * Ka;
 
-	//diffuse
+	////diffuse
+	//float3 norm = normalize(input.Normal);
+	//float3 lightDir = normalize(lightposition.xyz - input.Pos.xyz);
+	//float diff = max(dot(norm, lightDir), 0.0);
+	//float3 diffuse = Kd * diff * float3(1, 1, 1);
+
+	////specular
+	//float specularStrength = 0.5f;
+	//float3 viewDir = normalize(cameraposition.xyz - input.Pos.xyz);
+	//float3 reflectDir = reflect(-lightDir, norm);
+	//float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	//float3 specular = specularStrength * spec * float3(1,1,1) * Ks;
+	//
+	//float3 results = (ambient + diffuse + specular);
+
+	//return float4(results, 1);
+
+	
+	// ambient
+	float3 ambient = float3(1,1,1) * Ka;
+
+	// diffuse 
 	float3 norm = normalize(input.Normal);
 	float3 lightDir = normalize(lightposition.xyz - input.Pos.xyz);
 	float diff = max(dot(norm, lightDir), 0.0);
-	float3 diffuse = diff * float3(1, 1, 1);
+	float3 diffuse = float3(1, 1, 1) * (diff * Kd);
 
-	//specular
-	float specularStrength = 0.5f;
+	// specular
 	float3 viewDir = normalize(cameraposition.xyz - input.Pos.xyz);
 	float3 reflectDir = reflect(-lightDir, norm);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-	float3 specular = specularStrength * spec * float3(1,1,1);
-	
-	float3 results = (ambient + diffuse + specular);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	float3 specular = float3(1, 1, 1) * (spec * Ks);
 
-	return float4(results, 1);
+	float3 result = ambient + diffuse + specular;
+	return float4(result, 1);
 
-	
+
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
 	/*return float4(input.TexCoord, 0, 1);*/
 

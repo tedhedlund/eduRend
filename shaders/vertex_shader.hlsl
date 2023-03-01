@@ -6,17 +6,6 @@ cbuffer TransformationBuffer : register(b0)
 	matrix ProjectionMatrix;
 };
 
-//cbuffer LightAndCameraBuffer : register(b1)
-//{
-//	float4 lightposition;
-//	float4 cameraposition;
-//}
-//
-//cbuffer PhongColorAndShininessBuffer : register(b2)
-//{
-//	float4 colorandshine;
-//}
-
 struct VSIn
 {
 	float3 Pos : POSITION;

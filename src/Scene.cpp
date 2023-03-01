@@ -4,6 +4,7 @@
 #include <chrono>
 
 vec4f light = vec4f{ 0, 1000, 0, 0 };
+std::vector<Material> materials;
 
 Scene::Scene(
 	ID3D11Device* dxdevice,
@@ -168,8 +169,6 @@ void OurTestScene::Render()
 	Mview = camera->get_WorldToViewMatrix();
 	Mproj = camera->get_ProjectionMatrix();
 	
-	UpdateMaterialBuffer(vec4f(0,0,255,1));
-
 	// Load matrices + the Quad's transformation to the device and render it
 	UpdateTransformationBuffer(Mquad, Mview, Mproj);
 	quad->Render();
@@ -191,6 +190,13 @@ void OurTestScene::Render()
 	sponza->Render();
 	
 	UpdateLightAndCameraBuffer(light, camera->position.xyz0());
+	
+	Material m;	
+	m.Ka = { 0, 0.5, 0.5 };
+	m.Kd = { 0, 0.5, 0.5 };
+	m.Ks = { 0, 1, 1 };
+	materials.push_back(m);
+	UpdateMaterialBuffer(materials[0].Ka, materials[0].Kd, materials[0].Ks, 32);
 	
 }
 
@@ -287,11 +293,14 @@ void OurTestScene::InitMaterialBuffer()
 	ASSERT(hr = dxdevice->CreateBuffer(&PhongColorAndShininessBuffer_desc, nullptr, &mtl_buffer));
 }
 
-void OurTestScene::UpdateMaterialBuffer(vec4f colorandshine) 
+void OurTestScene::UpdateMaterialBuffer(vec3f Ka, vec3f Kd, vec3f Ks, float shininess)
 {
 	D3D11_MAPPED_SUBRESOURCE resource;
 	dxdevice_context->Map(mtl_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
 	PhongColorAndShininessBuffer* phong_buffer = (PhongColorAndShininessBuffer*)resource.pData;
-	phong_buffer->colorandshine = colorandshine;	
+	phong_buffer->Ka = Ka;
+	phong_buffer->Kd = Kd;
+	phong_buffer->Ks = Ks;
+	phong_buffer->shininess = shininess;	
 	dxdevice_context->Unmap(mtl_buffer, 0);
 }

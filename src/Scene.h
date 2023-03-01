@@ -81,7 +81,10 @@ class OurTestScene : public Scene
 
 	struct PhongColorAndShininessBuffer 
 	{
-		vec4f colorandshine;
+		vec3f Ka;
+		vec3f Kd;
+		vec3f Ks;
+		float shininess;
 	};
 
 	//
@@ -133,7 +136,10 @@ class OurTestScene : public Scene
 	void InitMaterialBuffer();
 
 	void UpdateMaterialBuffer(
-		vec4f colorandshine
+		vec3f Ka, 
+		vec3f Kd, 
+		vec3f Ks, 
+		float shininess
 	);
 
 public:
