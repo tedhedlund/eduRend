@@ -4,7 +4,6 @@
 #include <chrono>
 
 vec4f light = vec4f{ 0, 1000, 0, 0 };
-std::vector<Material> materials;
 
 Scene::Scene(
 	ID3D11Device* dxdevice,
@@ -52,13 +51,30 @@ void OurTestScene::Init()
 	// Move camera to (0,0,5)
 	camera->moveTo({ 0, 0, 5 });
 
+	//Materials
+	Material blue;
+	blue.Ka = { 0, 1, 1 };
+	blue.Kd = { 0, 1, 1 };
+	blue.Ks = { 0.5, 0.5, 0.5 };
+	blue.shininess = 32;
+
+	Material red;
+	red.Ka = { 1, 0, 0 };
+	red.Kd = { 1, 0, 0 };
+	red.Ks = { 0.5, 0.5, 0.5 };
+	red.shininess = 64;
+
 	// Create objects
 	quad = new QuadModel(dxdevice, dxdevice_context);
-	cube = new Cube(dxdevice, dxdevice_context);
+	quad->SetMaterial(blue);
+	cube = new Cube(dxdevice, dxdevice_context);	
+	cube->SetMaterial(blue);
 	cube1 = new Cube(dxdevice, dxdevice_context);
+	cube1->SetMaterial(red);
 	cube2 = new Cube(dxdevice, dxdevice_context);
+	cube2->SetMaterial(red);
 	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", dxdevice, dxdevice_context);
-	spaceship = new OBJModel("assets/Spaceship/spaceship.obj", dxdevice, dxdevice_context);
+	spaceship = new OBJModel("assets/Spaceship/spaceship.obj", dxdevice, dxdevice_context);	
 }
 
 //
@@ -169,34 +185,33 @@ void OurTestScene::Render()
 	Mview = camera->get_WorldToViewMatrix();
 	Mproj = camera->get_ProjectionMatrix();
 	
+	auto phongFunction = [this](vec4f Ka, vec4f Kd, vec4f Ks, float shininess) {UpdateMaterialBuffer(Ka, Kd, Ks, shininess); };
+
 	// Load matrices + the Quad's transformation to the device and render it
 	UpdateTransformationBuffer(Mquad, Mview, Mproj);
-	quad->Render();
+	quad->Render(phongFunction);
 
 	UpdateTransformationBuffer(Mcube, Mview, Mproj);
-	cube->Render();
+	cube->Render(phongFunction);
 
 	UpdateTransformationBuffer(Mcube1, Mview, Mproj);
-	cube1->Render();
+	cube1->Render(phongFunction);
 
 	UpdateTransformationBuffer(Mcube2, Mview, Mproj);
-	cube2->Render();
+	cube2->Render(phongFunction);
 	
 	UpdateTransformationBuffer(Mspaceship, Mview, Mproj);
-	spaceship->Render();
+	spaceship->Render(phongFunction);
 
 	// Load matrices + Sponza's transformation to the device and render it
 	UpdateTransformationBuffer(Msponza, Mview, Mproj);
-	sponza->Render();
+	sponza->Render(phongFunction);
 	
 	UpdateLightAndCameraBuffer(light, camera->position.xyz0());
 	
-	Material m;	
-	m.Ka = { 0, 0.5, 0.5 };
-	m.Kd = { 0, 0.5, 0.5 };
-	m.Ks = { 0, 1, 1 };
-	materials.push_back(m);
-	UpdateMaterialBuffer(materials[0].Ka, materials[0].Kd, materials[0].Ks, 32);
+	
+	
+	/*UpdateMaterialBuffer(materials[0].Ka.xyz1, materials[0].Kd, materials[0].Ks, 32);*/
 	
 }
 
@@ -293,7 +308,7 @@ void OurTestScene::InitMaterialBuffer()
 	ASSERT(hr = dxdevice->CreateBuffer(&PhongColorAndShininessBuffer_desc, nullptr, &mtl_buffer));
 }
 
-void OurTestScene::UpdateMaterialBuffer(vec3f Ka, vec3f Kd, vec3f Ks, float shininess)
+void OurTestScene::UpdateMaterialBuffer(vec4f Ka, vec4f Kd, vec4f Ks, float shininess)
 {
 	D3D11_MAPPED_SUBRESOURCE resource;
 	dxdevice_context->Map(mtl_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);

@@ -1,6 +1,8 @@
 
 Texture2D texDiffuse : register(t0);
 
+SamplerState texSampler : register(s0);
+
 cbuffer LightAndCameraBuffer : register(b0)
 {
 	float4 lightposition;
@@ -10,9 +12,9 @@ cbuffer LightAndCameraBuffer : register(b0)
 cbuffer PhongColorAndShininessBuffer : register(b1)
 {
 	/*float4 colorandshine;*/ //ambient, diffuse, specular, shininess
-	float3 Ka;
-	float3 Kd;
-	float3 Ks;
+	float4 Ka;
+	float4 Kd;
+	float4 Ks;
 	float shininess;
 }
 
@@ -56,22 +58,26 @@ float4 PS_main(PSIn input) : SV_Target
 
 	
 	// ambient
-	float3 ambient = float3(1,1,1) * Ka;
-
+	
 	// diffuse 
 	float3 norm = normalize(input.Normal);
 	float3 lightDir = normalize(lightposition.xyz - input.Pos.xyz);
 	float diff = max(dot(norm, lightDir), 0.0);
-	float3 diffuse = float3(1, 1, 1) * (diff * Kd);
+	float4 diffuse = (diff * Kd);
+	float4 color = texDiffuse.Sample(texSampler, input.TexCoord);
+
+	if(color.a <= 0) 
+	{
+		color = float4(1, 1, 1, 1);
+	}
 
 	// specular
 	float3 viewDir = normalize(cameraposition.xyz - input.Pos.xyz);
 	float3 reflectDir = reflect(-lightDir, norm);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-	float3 specular = float3(1, 1, 1) * (spec * Ks);
+	float4 specular = (spec * Ks);
 
-	float3 result = ambient + diffuse + specular;
-	return float4(result, 1);
+	return  (Ka * color) + (diffuse * color) + specular;
 
 
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)

@@ -15,7 +15,7 @@ QuadModel::QuadModel(
 	// Once their data is loaded to GPU buffers, they are not needed anymore
 	std::vector<Vertex> vertices;
 	std::vector<unsigned> indices;
-
+	material = new Material();
 	// Populate the vertex array with 4 vertices
 	Vertex v0, v1, v2, v3;
 	v0.Pos = { -0.5, -0.5f, 0.0f };
@@ -77,7 +77,7 @@ QuadModel::QuadModel(
 }
 
 
-void QuadModel::Render() const
+void QuadModel::Render(std::function<void(vec4f Ka, vec4f Kd, vec4f Ks, float shininess)> bufferUpdate) const
 {
 	// Bind our vertex buffer
 	const UINT32 stride = sizeof(Vertex); //  sizeof(float) * 8;
@@ -86,6 +86,17 @@ void QuadModel::Render() const
 
 	// Bind our index buffer
 	dxdevice_context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R32_UINT, 0);
+
+	if (material)
+	{
+		if (bufferUpdate)
+		{
+			(bufferUpdate)(material->Ka.xyz1(), material->Kd.xyz1(), material->Ks.xyz1(), material->shininess);
+		}
+		dxdevice_context->PSSetShaderResources(0, 1, &material->diffuse_texture.texture_SRV);
+		dxdevice_context->PSSetShaderResources(1, 1, &material->normal_texture.texture_SRV);
+		dxdevice_context->PSSetShaderResources(2, 1, &material->specular_texture.texture_SRV);
+	}
 
 	// Make the drawcall
 	dxdevice_context->DrawIndexed(nbr_indices, 0, 0);
@@ -170,6 +181,26 @@ OBJModel::OBJModel(
 				<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
 		}
 
+		if (mtl.normal_texture_filename.size()) {
+
+			hr = LoadTextureFromFile(
+				dxdevice,
+				mtl.normal_texture_filename.c_str(),
+				&mtl.normal_texture);
+			std::cout << "\t" << mtl.normal_texture_filename
+				<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+		}
+
+		if (mtl.specular_texture_filename.size()) {
+
+			hr = LoadTextureFromFile(
+				dxdevice,
+				mtl.specular_texture_filename.c_str(),
+				&mtl.specular_texture);
+			std::cout << "\t" << mtl.specular_texture_filename
+				<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+		}
+
 		// + other texture types here - see Material class
 		// ...
 	}
@@ -179,7 +210,7 @@ OBJModel::OBJModel(
 }
 
 
-void OBJModel::Render() const
+void OBJModel::Render(std::function<void(vec4f Ka, vec4f Kd, vec4f Ks, float shininess)> bufferUpdate) const
 {
 	// Bind vertex buffer
 	const UINT32 stride = sizeof(Vertex);
@@ -194,6 +225,16 @@ void OBJModel::Render() const
 	{
 		// Fetch material
 		const Material& mtl = materials[irange.mtl_index];
+
+		
+			if (bufferUpdate)
+			{
+				(bufferUpdate)(mtl.Ka.xyz1(), mtl.Kd.xyz1(), mtl.Ks.xyz1(), mtl.shininess);
+			}
+			dxdevice_context->PSSetShaderResources(0, 1, &mtl.diffuse_texture.texture_SRV);
+			dxdevice_context->PSSetShaderResources(1, 1, &mtl.normal_texture.texture_SRV);
+			dxdevice_context->PSSetShaderResources(2, 1, &mtl.specular_texture.texture_SRV);
+		
 
 		// Bind diffuse texture to slot t0 of the PS
 		dxdevice_context->PSSetShaderResources(0, 1, &mtl.diffuse_texture.texture_SRV);
@@ -220,7 +261,7 @@ Cube::Cube(ID3D11Device* dxdevice,
 {
 	std::vector<Vertex> vertices;
 	std::vector<unsigned> indices;
-
+	material = new Material();
 	//Vertex array and vertices
 	Vertex v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23;
 	v0.Pos = { -0.5f, 0.5f, -0.5f };
@@ -403,7 +444,7 @@ Cube::Cube(ID3D11Device* dxdevice,
 	nbr_indices = (unsigned int)indices.size();
 }
 
-void Cube::Render() const
+void Cube::Render(std::function<void(vec4f Ka, vec4f Kd, vec4f Ks, float shininess)> bufferUpdate) const
 {
 	// Bind our vertex buffer
 	const UINT32 stride = sizeof(Vertex); //  sizeof(float) * 8;
@@ -412,6 +453,17 @@ void Cube::Render() const
 
 	// Bind our index buffer
 	dxdevice_context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R32_UINT, 0);
+
+	if(material) 
+	{
+		if(bufferUpdate) 
+		{
+			(bufferUpdate)(material->Ka.xyz1(), material->Kd.xyz1(), material->Ks.xyz1(), material->shininess);
+		}
+		dxdevice_context->PSSetShaderResources(0, 1, &material->diffuse_texture.texture_SRV);
+		dxdevice_context->PSSetShaderResources(1, 1, &material->normal_texture.texture_SRV);
+		dxdevice_context->PSSetShaderResources(2, 1, &material->specular_texture.texture_SRV);
+	}
 
 	// Make the drawcall
 	dxdevice_context->DrawIndexed(nbr_indices, 0, 0);

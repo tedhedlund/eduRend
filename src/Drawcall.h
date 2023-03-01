@@ -34,16 +34,20 @@ struct Material
 	// Color components (ambient, diffuse & specular),
 	// with default values
     vec3f Ka = {0,0.5,0}, Kd = {0,0.5,0}, Ks = {1,1,1};
+	float shininess = 0;
     
 	std::string name;
 
 	// File paths to textures
 	std::string Kd_texture_filename;
 	std::string normal_texture_filename;
+	std::string specular_texture_filename;
 	// + more texture types (extend OBJLoader::LoadMaterials if needed)
 
 	// Device textures
 	Texture diffuse_texture;
+	Texture normal_texture;
+	Texture specular_texture;
 	// + other texture types
 };
 
