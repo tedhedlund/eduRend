@@ -23,6 +23,7 @@ struct PSIn
 	float4 Pos  : SV_Position;
 	float3 Normal : NORMAL;
 	float2 TexCoord : TEX;
+	float4 WorldPos : POSITION;
 };
 
 //-----------------------------------------------------------------------------------------
@@ -57,11 +58,10 @@ float4 PS_main(PSIn input) : SV_Target
 	//return float4(results, 1);
 
 	
-	// ambient
 	
 	// diffuse 
 	float3 norm = normalize(input.Normal);
-	float3 lightDir = normalize(lightposition.xyz - input.Pos.xyz);
+	float3 lightDir = normalize(lightposition.xyz - input.WorldPos.xyz);
 	float diff = max(dot(norm, lightDir), 0.0);
 	float4 diffuse = (diff * Kd);
 	float4 color = texDiffuse.Sample(texSampler, input.TexCoord);
@@ -72,7 +72,7 @@ float4 PS_main(PSIn input) : SV_Target
 	}
 
 	// specular
-	float3 viewDir = normalize(cameraposition.xyz - input.Pos.xyz);
+	float3 viewDir = normalize(cameraposition.xyz - input.WorldPos.xyz);
 	float3 reflectDir = reflect(-lightDir, norm);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	float4 specular = (spec * Ks);

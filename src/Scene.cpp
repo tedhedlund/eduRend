@@ -3,7 +3,7 @@
 #include <cmath>
 #include <chrono>
 
-vec4f light = vec4f{ 0, 1000, 0, 0 };
+vec4f light = vec4f{ 20, 30, 0, 0 };
 
 Scene::Scene(
 	ID3D11Device* dxdevice,
@@ -53,16 +53,16 @@ void OurTestScene::Init()
 
 	//Materials
 	Material blue;
-	blue.Ka = { 0, 1, 1 };
-	blue.Kd = { 0, 1, 1 };
+	blue.Ka = { 0, .5, .5 };
+	blue.Kd = { 0, .5, .5 };
 	blue.Ks = { 0.5, 0.5, 0.5 };
-	blue.shininess = 32;
+	blue.shininess = 16;
 
 	Material red;
 	red.Ka = { 1, 0, 0 };
 	red.Kd = { 1, 0, 0 };
 	red.Ks = { 0.5, 0.5, 0.5 };
-	red.shininess = 64;
+	red.shininess = 8;
 
 	// Create objects
 	quad = new QuadModel(dxdevice, dxdevice_context);
@@ -74,7 +74,7 @@ void OurTestScene::Init()
 	cube2 = new Cube(dxdevice, dxdevice_context);
 	cube2->SetMaterial(red);
 	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", dxdevice, dxdevice_context);
-	spaceship = new OBJModel("assets/Spaceship/spaceship.obj", dxdevice, dxdevice_context);	
+	/*spaceship = new OBJModel("assets/Spaceship/spaceship.obj", dxdevice, dxdevice_context);	*/
 }
 
 //
@@ -200,8 +200,8 @@ void OurTestScene::Render()
 	UpdateTransformationBuffer(Mcube2, Mview, Mproj);
 	cube2->Render(phongFunction);
 	
-	UpdateTransformationBuffer(Mspaceship, Mview, Mproj);
-	spaceship->Render(phongFunction);
+	/*UpdateTransformationBuffer(Mspaceship, Mview, Mproj);
+	spaceship->Render(phongFunction);*/
 
 	// Load matrices + Sponza's transformation to the device and render it
 	UpdateTransformationBuffer(Msponza, Mview, Mproj);
