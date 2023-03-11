@@ -57,6 +57,7 @@ void OurTestScene::Init()
 	blue.Kd = { 0, .5, .5 };
 	blue.Ks = { 0.5, 0.5, 0.5 };
 	blue.shininess = 16;
+	blue.Kd_texture_filename = "assets/textures/wood.png";	
 
 	Material red;
 	red.Ka = { 1, 0, 0 };
@@ -168,7 +169,7 @@ void OurTestScene::Update(
 		fps_cooldown = 2.0;
 	}
 	
-	light.x += std::cos(angle) * 2;
+	/*light.x += std::cos(angle) * 2;*/
 }
 
 //

@@ -463,6 +463,7 @@ void Cube::Render(std::function<void(vec4f Ka, vec4f Kd, vec4f Ks, float shinine
 		dxdevice_context->PSSetShaderResources(0, 1, &material->diffuse_texture.texture_SRV);
 		dxdevice_context->PSSetShaderResources(1, 1, &material->normal_texture.texture_SRV);
 		dxdevice_context->PSSetShaderResources(2, 1, &material->specular_texture.texture_SRV);
+		
 	}
 
 	// Make the drawcall

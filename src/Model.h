@@ -52,6 +52,23 @@ public:
 	void SetMaterial(Material m) 
 	{
 		*material = m;
+
+		
+			std::cout << "Loading cube textures..." << std::endl;
+			HRESULT hr;
+
+			// Load Diffuse texture
+			//	
+			if (material->Kd_texture_filename.size()) {
+
+				hr = LoadTextureFromFile(
+					dxdevice,
+					material->Kd_texture_filename.c_str(),
+					&material->diffuse_texture);
+				std::cout << "\t" << material->Kd_texture_filename
+					<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+			}
+		
 	}
 
 	//
@@ -114,6 +131,7 @@ class Cube : public Model
 {
 
 	unsigned nbr_indices = 0;
+
 public:
 
 	Cube(
