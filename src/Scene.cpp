@@ -3,7 +3,8 @@
 #include <cmath>
 #include <chrono>
 
-vec4f light = vec4f{ 20, 30, 0, 0 };
+
+vec4f light = vec4f{ 0, 10000, 0, 0 };
 
 Scene::Scene(
 	ID3D11Device* dxdevice,
@@ -35,7 +36,7 @@ OurTestScene::OurTestScene(
 	// + init other CBuffers
 	InitLightAndCameraBuffer();
 	InitMaterialBuffer();
-	InitSampler();
+	/*InitSampler();*/
 	
 }
 
@@ -172,6 +173,15 @@ void OurTestScene::Update(
 	}
 	
 	/*light.x += std::cos(angle) * 2;*/
+
+	if (input_handler->IsKeyPressed(Keys::F))
+		InitSamplerPoint();
+
+	if (input_handler->IsKeyPressed(Keys::G))
+		InitSamplerLinear();
+
+	if (input_handler->IsKeyPressed(Keys::H))
+		InitSamplerAniso();
 }
 
 //
@@ -212,9 +222,7 @@ void OurTestScene::Render()
 	sponza->Render(phongFunction);
 	
 	UpdateLightAndCameraBuffer(light, camera->position.xyz0());
-	
-	
-	
+
 	/*UpdateMaterialBuffer(materials[0].Ka.xyz1, materials[0].Kd, materials[0].Ks, 32);*/
 	
 }
@@ -325,14 +333,17 @@ void OurTestScene::UpdateMaterialBuffer(vec4f Ka, vec4f Kd, vec4f Ks, float shin
 	dxdevice_context->Unmap(mtl_buffer, 0);
 }
 
-void OurTestScene::InitSampler() 
+void OurTestScene::InitSamplerPoint() 
 {
+	/*D3D11_TEXTURE_ADDRESS_WRAP
+	D3D11_TEXTURE_ADDRESS_MIRROR
+	D3D11_TEXTURE_ADDRESS_CLAMP*/
 	D3D11_SAMPLER_DESC samplerdesc =
 	{
-		D3D11_FILTER_MIN_MAG_MIP_LINEAR,
-		D3D11_TEXTURE_ADDRESS_CLAMP,
-		D3D11_TEXTURE_ADDRESS_CLAMP,
-		D3D11_TEXTURE_ADDRESS_CLAMP,
+		D3D11_FILTER_MIN_MAG_MIP_POINT,
+		D3D11_TEXTURE_ADDRESS_WRAP,
+		D3D11_TEXTURE_ADDRESS_WRAP,
+		D3D11_TEXTURE_ADDRESS_WRAP,
 		0.0f,
 		1,
 		D3D11_COMPARISON_NEVER,
@@ -340,5 +351,49 @@ void OurTestScene::InitSampler()
 		-FLT_MAX,
 		FLT_MAX,
 	};
+
+
+	dxdevice->CreateSamplerState(&samplerdesc, &sampler);
+}
+
+void OurTestScene::InitSamplerLinear()
+{
+
+	D3D11_SAMPLER_DESC samplerdesc =
+	{
+		D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+		D3D11_TEXTURE_ADDRESS_WRAP,
+		D3D11_TEXTURE_ADDRESS_WRAP,
+		D3D11_TEXTURE_ADDRESS_WRAP,
+		0.0f,
+		1,
+		D3D11_COMPARISON_NEVER,
+		{1.0f, 1.0f, 1.0f, 1.0f},
+		-FLT_MAX,
+		FLT_MAX,
+	};
+
+
+	dxdevice->CreateSamplerState(&samplerdesc, &sampler);
+}
+
+void OurTestScene::InitSamplerAniso()
+{
+
+	D3D11_SAMPLER_DESC samplerdesc =
+	{
+		D3D11_FILTER_ANISOTROPIC,
+		D3D11_TEXTURE_ADDRESS_WRAP,
+		D3D11_TEXTURE_ADDRESS_WRAP,
+		D3D11_TEXTURE_ADDRESS_WRAP,
+		0.0f,
+		16,
+		D3D11_COMPARISON_NEVER,
+		{1.0f, 1.0f, 1.0f, 1.0f},
+		-FLT_MAX,
+		FLT_MAX,
+	};
+
+
 	dxdevice->CreateSamplerState(&samplerdesc, &sampler);
 }

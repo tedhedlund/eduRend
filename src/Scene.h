@@ -62,6 +62,7 @@ class OurTestScene : public Scene
 	ID3D11SamplerState* sampler = nullptr; //sampler
 
 
+
 	// 
 	// CBuffer client-side definitions
 	// These must match the corresponding shader definitions 
@@ -143,7 +144,9 @@ class OurTestScene : public Scene
 		float shininess
 	);
 
-	void InitSampler();
+	void InitSamplerPoint();
+	void InitSamplerLinear();
+	void InitSamplerAniso();
 
 public:
 	OurTestScene(

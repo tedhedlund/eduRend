@@ -57,8 +57,6 @@ float4 PS_main(PSIn input) : SV_Target
 
 	//return float4(results, 1);
 
-	
-	
 	// diffuse 
 	float3 norm = normalize(input.Normal);
 	float3 lightDir = normalize(lightposition.xyz - input.WorldPos.xyz);
