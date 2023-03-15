@@ -333,7 +333,7 @@ void OurTestScene::UpdateMaterialBuffer(vec4f Ka, vec4f Kd, vec4f Ks, float shin
 	dxdevice_context->Unmap(mtl_buffer, 0);
 }
 
-void OurTestScene::InitSamplerPoint() 
+void OurTestScene::InitSamplerPoint() //No antialiasing
 {
 	/*D3D11_TEXTURE_ADDRESS_WRAP
 	D3D11_TEXTURE_ADDRESS_MIRROR
@@ -356,7 +356,7 @@ void OurTestScene::InitSamplerPoint()
 	dxdevice->CreateSamplerState(&samplerdesc, &sampler);
 }
 
-void OurTestScene::InitSamplerLinear()
+void OurTestScene::InitSamplerLinear() //Takes a 2x2 area and and puts it together (Good for magnification, but too blurry for mini)
 {
 
 	D3D11_SAMPLER_DESC samplerdesc =
@@ -377,7 +377,7 @@ void OurTestScene::InitSamplerLinear()
 	dxdevice->CreateSamplerState(&samplerdesc, &sampler);
 }
 
-void OurTestScene::InitSamplerAniso()
+void OurTestScene::InitSamplerAniso() //Sample N times over a polygon (Good because the texture is angled relatively to the camera)
 {
 
 	D3D11_SAMPLER_DESC samplerdesc =
