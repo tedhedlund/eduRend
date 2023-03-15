@@ -35,6 +35,8 @@ OurTestScene::OurTestScene(
 	// + init other CBuffers
 	InitLightAndCameraBuffer();
 	InitMaterialBuffer();
+	InitSampler();
+	
 }
 
 //
@@ -53,9 +55,9 @@ void OurTestScene::Init()
 
 	//Materials
 	Material blue;
-	blue.Ka = { 0, .5, .5 };
-	blue.Kd = { 0, .5, .5 };
-	blue.Ks = { 0.5, 0.5, 0.5 };
+	blue.Ka = { 1, 1, 1 };
+	blue.Kd = { 1, 1, 1 };
+	blue.Ks = { 1, 1, 1 };
 	blue.shininess = 16;
 	blue.Kd_texture_filename = "assets/textures/wood.png";	
 
@@ -181,6 +183,7 @@ void OurTestScene::Render()
 	dxdevice_context->VSSetConstantBuffers(0, 1, &transformation_buffer);
 	dxdevice_context->PSSetConstantBuffers(0, 1, &lightandcamera_buffer);
 	dxdevice_context->PSSetConstantBuffers(1, 1, &mtl_buffer);
+	dxdevice_context->PSSetSamplers(0, 1, &sampler);
 
 	// Obtain the matrices needed for rendering from the camera
 	Mview = camera->get_WorldToViewMatrix();
@@ -230,6 +233,7 @@ void OurTestScene::Release()
 	// + release other CBuffers
 	SAFE_RELEASE(lightandcamera_buffer);
 	SAFE_RELEASE(mtl_buffer);
+	SAFE_RELEASE(sampler);
 }
 
 void OurTestScene::WindowResize(
@@ -319,4 +323,22 @@ void OurTestScene::UpdateMaterialBuffer(vec4f Ka, vec4f Kd, vec4f Ks, float shin
 	phong_buffer->Ks = Ks;
 	phong_buffer->shininess = shininess;	
 	dxdevice_context->Unmap(mtl_buffer, 0);
+}
+
+void OurTestScene::InitSampler() 
+{
+	D3D11_SAMPLER_DESC samplerdesc =
+	{
+		D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+		D3D11_TEXTURE_ADDRESS_CLAMP,
+		D3D11_TEXTURE_ADDRESS_CLAMP,
+		D3D11_TEXTURE_ADDRESS_CLAMP,
+		0.0f,
+		1,
+		D3D11_COMPARISON_NEVER,
+		{1.0f, 1.0f, 1.0f, 1.0f},
+		-FLT_MAX,
+		FLT_MAX,
+	};
+	dxdevice->CreateSamplerState(&samplerdesc, &sampler);
 }

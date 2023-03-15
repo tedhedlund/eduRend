@@ -59,6 +59,7 @@ class OurTestScene : public Scene
 	// + other CBuffers
 	ID3D11Buffer* lightandcamera_buffer = nullptr; //Updated per frame
 	ID3D11Buffer* mtl_buffer = nullptr; //Updated per frame and object
+	ID3D11SamplerState* sampler = nullptr; //sampler
 
 
 	// 
@@ -141,6 +142,8 @@ class OurTestScene : public Scene
 		vec4f Ks, 
 		float shininess
 	);
+
+	void InitSampler();
 
 public:
 	OurTestScene(
