@@ -36,7 +36,7 @@ OurTestScene::OurTestScene(
 	// + init other CBuffers
 	InitLightAndCameraBuffer();
 	InitMaterialBuffer();
-	/*InitSampler();*/
+	InitSamplerAniso();
 	
 }
 
