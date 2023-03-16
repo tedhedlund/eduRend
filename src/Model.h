@@ -71,6 +71,21 @@ public:
 		
 	}
 
+	void compute_TB(Vertex& v0, Vertex& v1, Vertex& v2) 
+	{
+
+		vec3f tangent, binormal;
+	
+		vec3f d = v1.Pos - v0.Pos;
+		vec3f e = v2.Pos - v0.Pos;
+
+		vec2f f = v1.TexCoord - v0.TexCoord;
+		vec2f g = v2.TexCoord - v0.TexCoord;
+
+		v0.Tangent = v1.Tangent = v2.Tangent = tangent;
+		v0.Binormal = v1.Binormal = v2.Binormal = binormal;
+	}
+
 	//
 	// Destructor
 	//
