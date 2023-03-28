@@ -4,7 +4,7 @@
 #include <chrono>
 
 
-vec4f light = vec4f{ 0, 10000, 0, 0 };
+vec4f light = vec4f{ 0, 500, 0, 0 };
 
 Scene::Scene(
 	ID3D11Device* dxdevice,

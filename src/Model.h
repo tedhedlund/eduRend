@@ -75,15 +75,32 @@ public:
 	{
 
 		vec3f tangent, binormal;
-	
-		vec3f d = v1.Pos - v0.Pos;
-		vec3f e = v2.Pos - v0.Pos;
+		vec3f normal = v0.Normal;
 
-		vec2f f = v1.TexCoord - v0.TexCoord;
-		vec2f g = v2.TexCoord - v0.TexCoord;
+		vec2f texture1 = v0.TexCoord;
+		vec2f texture2 = v1.TexCoord;
+		vec2f texture3 = v2.TexCoord;
 
-		v0.Tangent = v1.Tangent = v2.Tangent = tangent;
-		v0.Binormal = v1.Binormal = v2.Binormal = binormal;
+		float det = (texture1.x * texture2.y) - (texture1.y * texture2.x);
+
+		det = 1.0f / det;
+
+		tangent.x = det * ((texture2.y * (v0.Pos.x - v1.Pos.x)) + (texture1.y * (v1.Pos.x - v2.Pos.x)));
+		tangent.y = det * ((texture2.y * (v0.Pos.y - v1.Pos.y)) + (texture1.y * (v1.Pos.y - v2.Pos.y)));
+		tangent.z = det * ((texture2.y * (v0.Pos.z - v1.Pos.z)) + (texture1.y * (v1.Pos.z - v2.Pos.z)));
+
+		binormal.x = det * ((texture1.x * (v1.Pos.x - v2.Pos.x)) + (texture2.x * (v0.Pos.x - v1.Pos.x)));
+		binormal.y = det * ((texture1.x * (v1.Pos.y - v2.Pos.y)) + (texture2.x * (v0.Pos.y - v1.Pos.y)));
+		binormal.z = det * ((texture1.x * (v1.Pos.z - v2.Pos.z)) + (texture2.x * (v0.Pos.z - v1.Pos.z)));
+
+		v0.Tangent = tangent;
+		v1.Tangent = tangent;
+		v2.Tangent = tangent;
+		
+		v0.Binormal = binormal;
+		v1.Binormal = binormal;
+		v2.Binormal = binormal;
+
 	}
 
 	//

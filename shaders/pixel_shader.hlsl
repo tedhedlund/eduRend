@@ -1,6 +1,8 @@
 
 Texture2D texDiffuse : register(t0);
 
+Texture2D texNormal : register (t1);
+
 SamplerState texSampler : register(s0);
 
 cbuffer LightAndCameraBuffer : register(b0)
@@ -24,6 +26,8 @@ struct PSIn
 	float3 Normal : NORMAL;
 	float2 TexCoord : TEX;
 	float4 WorldPos : POSITION;
+	float4 Tangent : TANGENT;
+	float4 Binormal : BINORMAL;
 };
 
 //-----------------------------------------------------------------------------------------
@@ -36,29 +40,16 @@ float4 PS_main(PSIn input) : SV_Target
 	// The 4:th component is opacity and should be = 1	
 	/*return float4(input.Normal*0.5+0.5, 1);*/
 
-	////ambient
-	//float ambientStrenght = 0.1f;
-	//float3 ambient = ambientStrenght * float3(1, 1, 1) * Ka;
+	// TBN
+	float4 normalTexture = texNormal.Sample(texSampler,input.TexCoord) * 2 - 1;
 
-	////diffuse
-	//float3 norm = normalize(input.Normal);
-	//float3 lightDir = normalize(lightposition.xyz - input.Pos.xyz);
-	//float diff = max(dot(norm, lightDir), 0.0);
-	//float3 diffuse = Kd * diff * float3(1, 1, 1);
+	float3x3 TBN = transpose(float3x3(input.Tangent.xyz, input.Binormal.xyz, input.Normal.xyz));
 
-	////specular
-	//float specularStrength = 0.5f;
-	//float3 viewDir = normalize(cameraposition.xyz - input.Pos.xyz);
-	//float3 reflectDir = reflect(-lightDir, norm);
-	//float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-	//float3 specular = specularStrength * spec * float3(1,1,1) * Ks;
-	//
-	//float3 results = (ambient + diffuse + specular);
-
-	//return float4(results, 1);
-
+	float3 mappedNormal = mul(TBN, normalTexture.xyz);
+	
 	// diffuse 
-	float3 norm = normalize(input.Normal);
+	/*float3 norm = normalize(input.Normal);*/
+	float3 norm = normalize(mappedNormal);	
 	float3 lightDir = normalize(lightposition.xyz - input.WorldPos.xyz);
 	float diff = max(dot(norm, lightDir), 0.0);
 	float4 diffuse = (diff * Kd);
@@ -76,8 +67,7 @@ float4 PS_main(PSIn input) : SV_Target
 	float4 specular = (spec * Ks);
 
 	return  (Ka * color) + (diffuse * color) + specular;
-
-
+	
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
 	/*return float4(input.TexCoord, 0, 1);*/
 

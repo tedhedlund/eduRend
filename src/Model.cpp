@@ -132,6 +132,11 @@ OBJModel::OBJModel(
 		i_ofs = (unsigned int)indices.size();
 	}
 
+	for (int i = 0; i < indices.size(); i += 3)
+	{
+		compute_TB(mesh->vertices[indices[i + 0]], mesh->vertices[indices[i + 1]], mesh->vertices[indices[i + 2]]);
+	}
+
 	// Vertex array descriptor
 	D3D11_BUFFER_DESC vbufferDesc = { 0 };
 	vbufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -153,6 +158,7 @@ OBJModel::OBJModel(
 	ibufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	ibufferDesc.MiscFlags = 0;
 	ibufferDesc.ByteWidth = (UINT)(indices.size()*sizeof(unsigned));
+
 	// Data resource
 	D3D11_SUBRESOURCE_DATA idata;
 	idata.pSysMem = &indices[0];
