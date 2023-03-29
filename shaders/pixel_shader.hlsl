@@ -52,8 +52,8 @@ float4 PS_main(PSIn input) : SV_Target
 	float4 lightpos = mul(input.ModelToWorldMatrix, lightposition);
 	
 	// diffuse 
-	float3 norm = normalize(input.Normal);
-	//float3 norm = normalize(mappedNormal);	
+	//float3 norm = normalize(input.Normal);
+	float3 norm = normalize(mappedNormal);	
 	float3 lightDir = normalize(lightpos.xyz - input.WorldPos.xyz);
 	float diff = max(dot(norm, lightDir), 0.0);
 	float4 diffuse = (diff * Kd);
@@ -71,7 +71,7 @@ float4 PS_main(PSIn input) : SV_Target
 	float4 specular = (spec * Ks);
 
 	return  (Ka * color) + (diffuse * color) + specular;
-	//return float4(input.Tangent, 1);
+	//return float4(mappedNormal, 1);
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
 	/*return float4(input.TexCoord, 0, 1);*/
 
