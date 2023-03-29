@@ -68,6 +68,26 @@ public:
 				std::cout << "\t" << material->Kd_texture_filename
 					<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
 			}
+
+			if (material->normal_texture_filename.size()) {
+
+				hr = LoadTextureFromFile(
+					dxdevice,
+					material->normal_texture_filename.c_str(),
+					&material->normal_texture);
+				std::cout << "\t" << material->normal_texture_filename
+					<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+			}
+
+			if (material->specular_texture_filename.size()) {
+
+				hr = LoadTextureFromFile(
+					dxdevice,
+					material->specular_texture_filename.c_str(),
+					&material->specular_texture);
+				std::cout << "\t" << material->specular_texture_filename
+					<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+			}
 		
 	}
 

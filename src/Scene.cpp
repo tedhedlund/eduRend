@@ -4,7 +4,7 @@
 #include <chrono>
 
 
-vec4f light = vec4f{ 0, 500, 0, 0 };
+vec4f light = vec4f{ 0, 50, 0, 0 };
 
 Scene::Scene(
 	ID3D11Device* dxdevice,
@@ -68,6 +68,15 @@ void OurTestScene::Init()
 	red.Ks = { 0.5, 0.5, 0.5 };
 	red.shininess = 8;
 
+	Material mirror;
+	mirror.Ka = { 1, 1, 1 };
+	mirror.Kd = { 1, 1, 1 };
+	mirror.Ks = { 1, 1, 1 };
+	mirror.shininess = 2;
+	mirror.Kd_texture_filename = "assets/textures/brick_diffuse.png";
+	mirror.normal_texture_filename = "assets/textures/brick_bump.png";
+	mirror.specular_texture_filename = "assets/textures/brick_specular.png";
+
 	// Create objects
 	quad = new QuadModel(dxdevice, dxdevice_context);
 	quad->SetMaterial(blue);
@@ -76,7 +85,7 @@ void OurTestScene::Init()
 	cube1 = new Cube(dxdevice, dxdevice_context);
 	cube1->SetMaterial(red);
 	cube2 = new Cube(dxdevice, dxdevice_context);
-	cube2->SetMaterial(red);
+	cube2->SetMaterial(mirror);
 	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", dxdevice, dxdevice_context);
 	/*spaceship = new OBJModel("assets/Spaceship/spaceship.obj", dxdevice, dxdevice_context);	*/
 }
@@ -137,18 +146,18 @@ void OurTestScene::Update(
 		mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
 		mat4f::scaling(1.5, 1.5, 1.5);				// Scale uniformly to 150%
 
-	Mcube = mat4f::translation(5, 0, 0) *
+	Mcube = mat4f::translation(5, 0, -20) *
 		mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *
 		mat4f::scaling(2, 2, 2);
 	
 //	m4f MCube_T = mat4f::translation(Mcube.m14, Mcube.m24, Mcube.m34);
-	Mcube1 = Mcube.translation(5, 0, 0) * Mcube.scaling(2, 2, 2) * mat4f::translation(std::cos(angle) * 1.5, std::sin(angle) * 1.5, 0) *
+	Mcube1 = Mcube.translation(5, 0, -20) * Mcube.scaling(2, 2, 2) * mat4f::translation(std::cos(angle) * 1.5, std::sin(angle) * 1.5, 0) *
 		mat4f::rotation(0.0f, 0.0f, 0.0f) *
 		mat4f::scaling(0.5, 0.5, 0.5);
 
 	Mcube2 = Mcube1 * mat4f::translation(std::cos(angle) * 1.5, std::sin(angle) * 1.5, 1) *
 		mat4f::rotation(angle, 1.0f, 0.0f, 0.0f) *
-		mat4f::scaling(0.5, 0.5, 0.5);
+		mat4f::scaling(1.5, 1.5, 1.5);
 
 
 	// Sponza model-to-world transformation
@@ -172,7 +181,7 @@ void OurTestScene::Update(
 		fps_cooldown = 2.0;
 	}
 	
-	/*light.x += std::cos(angle) * 2;*/
+	light.x += std::cos(angle) * 2;
 
 	if (input_handler->IsKeyPressed(Keys::F))
 		InitSamplerPoint();

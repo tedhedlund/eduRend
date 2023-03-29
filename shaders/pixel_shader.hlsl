@@ -3,6 +3,8 @@ Texture2D texDiffuse : register(t0);
 
 Texture2D texNormal : register (t1);
 
+Texture2D texSpecular : register(t2);
+
 SamplerState texSampler : register(s0);
 
 cbuffer LightAndCameraBuffer : register(b0)
@@ -28,7 +30,6 @@ struct PSIn
 	float4 WorldPos : POSITION;
 	float3 Tangent : TANGENT;
 	float3 Binormal : BINORMAL;
-	matrix ModelToWorldMatrix : MATRIX;
 };
 
 //-----------------------------------------------------------------------------------------
@@ -43,19 +44,13 @@ float4 PS_main(PSIn input) : SV_Target
 
 	// TBN
 	float4 normalTexture = texNormal.Sample(texSampler,input.TexCoord) * 2 - 1;
-
 	float3x3 TBN = transpose(float3x3(input.Tangent, input.Binormal, input.Normal));
-
 	float3 mappedNormal = mul(TBN, normalTexture.xyz);
 
-	float4 camerapos = mul(input.ModelToWorldMatrix, cameraposition);
-	float4 lightpos = mul(input.ModelToWorldMatrix, lightposition);
-	
-	// diffuse 
-	//float3 norm = normalize(input.Normal);
+	// diffuse 	
 	float3 norm = normalize(mappedNormal);	
-	float3 lightDir = normalize(lightpos.xyz - input.WorldPos.xyz);
-	float diff = max(dot(norm, lightDir), 0.0);
+	float3 lightDir = normalize(lightposition.xyz - input.WorldPos.xyz);
+	float diff = max(dot(input.Normal, lightDir), 0.0);
 	float4 diffuse = (diff * Kd);
 	float4 color = texDiffuse.Sample(texSampler, input.TexCoord);
 
@@ -65,14 +60,32 @@ float4 PS_main(PSIn input) : SV_Target
 	}
 
 	// specular
-	float3 viewDir = normalize(camerapos.xyz - input.WorldPos.xyz);
+	float3 viewDir = normalize(cameraposition.xyz - input.WorldPos.xyz);
 	float3 reflectDir = reflect(-lightDir, norm);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 50);
 	float4 specular = (spec * Ks);
+	float4 specularTexture = texSpecular.Sample(texSampler, input.TexCoord);
 
-	return  (Ka * color) + (diffuse * color) + specular;
-	//return float4(mappedNormal, 1);
+	return  (Ka * color) + (diffuse * color) + (specular * specularTexture);
+	//return float4(specularTexture);
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
 	/*return float4(input.TexCoord, 0, 1);*/
+
+	//Other solution
+	/*float3x3 TBN = transpose(float3x3(input.Tangent, input.Binormal, input.Normal));
+	float4 specularTexture = texSpecular.Sample(texSampler, input.TexCoord);
+
+	float4 normalVector = texNormal.Sample(texSampler, input.TexCoord);
+	float4 diffuseColor = texDiffuse.Sample(texSampler, input.TexCoord);
+	float3 newNormal = mul(TBN, normalVector.xyz * 2 - 1);
+
+	float3 lightVector = normalize(lightposition.xyz - input.WorldPos.xyz);
+	float3 viewVector = normalize(cameraposition.xyz - input.WorldPos.xyz);
+	float3 reflection = normalize(reflect(-lightVector, newNormal));
+
+	float3 A = Ka.xyz;
+	float3 D = max(mul(diffuseColor.xyz, dot(lightVector, input.Normal)), 0);
+	float3 S = mul(Ks.xyz, pow(max(dot(reflection, viewVector), 0), 50));
+	return float4((A * diffuseColor.xyz) + (D * diffuseColor.xyz) + S * specularTexture.xyz, 1);*/
 
 }

@@ -256,7 +256,8 @@ OBJModel::~OBJModel()
 	for (auto& material : materials)
 	{
 		SAFE_RELEASE(material.diffuse_texture.texture_SRV);
-
+		SAFE_RELEASE(material.normal_texture.texture_SRV);
+		SAFE_RELEASE(material.specular_texture.texture_SRV);
 		// Release other used textures ...
 	}
 }
