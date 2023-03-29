@@ -28,6 +28,7 @@ struct PSIn
 	float4 WorldPos : POSITION;
 	float3 Tangent : TANGENT;
 	float3 Binormal : BINORMAL;
+	matrix ModelToWorldMatrix : MATRIX;
 };
 
 //-----------------------------------------------------------------------------------------
@@ -46,11 +47,14 @@ float4 PS_main(PSIn input) : SV_Target
 	float3x3 TBN = transpose(float3x3(input.Tangent, input.Binormal, input.Normal));
 
 	float3 mappedNormal = mul(TBN, normalTexture.xyz);
+
+	float4 camerapos = mul(input.ModelToWorldMatrix, cameraposition);
+	float4 lightpos = mul(input.ModelToWorldMatrix, lightposition);
 	
 	// diffuse 
 	float3 norm = normalize(input.Normal);
 	//float3 norm = normalize(mappedNormal);	
-	float3 lightDir = normalize(lightposition.xyz - input.WorldPos.xyz);
+	float3 lightDir = normalize(lightpos.xyz - input.WorldPos.xyz);
 	float diff = max(dot(norm, lightDir), 0.0);
 	float4 diffuse = (diff * Kd);
 	float4 color = texDiffuse.Sample(texSampler, input.TexCoord);
@@ -61,7 +65,7 @@ float4 PS_main(PSIn input) : SV_Target
 	}
 
 	// specular
-	float3 viewDir = normalize(cameraposition.xyz - input.WorldPos.xyz);
+	float3 viewDir = normalize(camerapos.xyz - input.WorldPos.xyz);
 	float3 reflectDir = reflect(-lightDir, norm);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	float4 specular = (spec * Ks);

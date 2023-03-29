@@ -23,6 +23,7 @@ struct PSIn
 	float4 WorldPos : POSITION;
 	float3 Tangent : TANGENT;
 	float3 Binormal : BINORMAL;
+	matrix ModelToWorldMatrix : MATRIX;
 };
 
 //-----------------------------------------------------------------------------------------
@@ -48,6 +49,7 @@ PSIn VS_main(VSIn input)
 	output.WorldPos = mul(ModelToWorldMatrix, float4(input.Pos, 1));
 	output.Tangent = normalize(mul(ModelToWorldMatrix, float4(input.Tangent, 0)).xyz);
 	output.Binormal = normalize(mul(ModelToWorldMatrix, float4(input.Binormal, 0)).xyz);
+	output.ModelToWorldMatrix = ModelToWorldMatrix;
 		
 	return output;
 }
