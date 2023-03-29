@@ -14,8 +14,7 @@ cbuffer LightAndCameraBuffer : register(b0)
 }
 
 cbuffer PhongColorAndShininessBuffer : register(b1)
-{
-	/*float4 colorandshine;*/ //ambient, diffuse, specular, shininess
+{	
 	float4 Ka;
 	float4 Kd;
 	float4 Ks;
