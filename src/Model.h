@@ -74,7 +74,7 @@ public:
 	void compute_TB(Vertex& v0, Vertex& v1, Vertex& v2) 
 	{
 
-		vec3f tangent, binormal;
+		/*vec3f tangent, binormal;
 		vec3f normal = v0.Normal;
 
 		vec2f texture1 = v0.TexCoord;
@@ -99,7 +99,62 @@ public:
 		
 		v0.Binormal = binormal;
 		v1.Binormal = binormal;
-		v2.Binormal = binormal;
+		v2.Binormal = binormal;*/
+
+		vec3f tangent, binormal;
+
+		float vector1[3], vector2[3];
+		float tuVector[2], tvVector[2];
+		float den;
+		float length;
+
+
+		// Calculate the two vectors for this face.
+		vector1[0] = v1.Pos.x - v0.Pos.x;
+		vector1[1] = v1.Pos.y - v0.Pos.y;
+		vector1[2] = v1.Pos.z - v0.Pos.z;
+
+		vector2[0] = v2.Pos.x - v0.Pos.x;
+		vector2[1] = v2.Pos.y - v0.Pos.y;
+		vector2[2] = v2.Pos.z - v0.Pos.z;
+
+		// Calculate the tu and tv texture space vectors.
+		tuVector[0] = v1.TexCoord.x - v0.TexCoord.x;
+		tvVector[0] = v1.TexCoord.y - v0.TexCoord.y;
+
+		tuVector[1] = v2.TexCoord.x - v0.TexCoord.x;
+		tvVector[1] = v2.TexCoord.y - v0.TexCoord.y;
+
+		// Calculate the denominator of the tangent/binormal equation.
+		den = 1.0f / (tuVector[0] * tvVector[1] - tuVector[1] * tvVector[0]);
+
+		// Calculate the cross products and multiply by the coefficient to get the tangent and binormal.
+		tangent.x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
+		tangent.y = (tvVector[1] * vector1[1] - tvVector[0] * vector2[1]) * den;
+		tangent.z = (tvVector[1] * vector1[2] - tvVector[0] * vector2[2]) * den;
+
+		binormal.x = (tuVector[0] * vector2[0] - tuVector[1] * vector1[0]) * den;
+		binormal.y = (tuVector[0] * vector2[1] - tuVector[1] * vector1[1]) * den;
+		binormal.z = (tuVector[0] * vector2[2] - tuVector[1] * vector1[2]) * den;
+
+		// Calculate the length of this normal.
+		length = sqrt((tangent.x * tangent.x) + (tangent.y * tangent.y) + (tangent.z * tangent.z));
+
+		// Normalize the normal and then store it
+		tangent.x = tangent.x / length;
+		tangent.y = tangent.y / length;
+		tangent.z = tangent.z / length;
+
+		// Calculate the length of this normal.
+		length = sqrt((binormal.x * binormal.x) + (binormal.y * binormal.y) + (binormal.z * binormal.z));
+
+		// Normalize the normal and then store it
+		binormal.x = binormal.x / length;
+		binormal.y = binormal.y / length;
+		binormal.z = binormal.z / length;
+
+		v0.Tangent = v1.Tangent = v2.Tangent = tangent;
+		v0.Binormal = v1.Binormal = v2.Binormal = binormal;
 
 	}
 

@@ -43,13 +43,13 @@ float4 PS_main(PSIn input) : SV_Target
 	// TBN
 	float4 normalTexture = texNormal.Sample(texSampler,input.TexCoord) * 2 - 1;
 
-	float3x3 TBN = transpose(float3x3(input.Tangent.xyz, input.Binormal.xyz, input.Normal.xyz));
+	float3x3 TBN = transpose(float3x3(input.Tangent, input.Binormal, input.Normal));
 
 	float3 mappedNormal = mul(TBN, normalTexture.xyz);
 	
 	// diffuse 
-	/*float3 norm = normalize(input.Normal);*/
-	float3 norm = normalize(mappedNormal);	
+	float3 norm = normalize(input.Normal);
+	//float3 norm = normalize(mappedNormal);	
 	float3 lightDir = normalize(lightposition.xyz - input.WorldPos.xyz);
 	float diff = max(dot(norm, lightDir), 0.0);
 	float4 diffuse = (diff * Kd);
@@ -67,7 +67,7 @@ float4 PS_main(PSIn input) : SV_Target
 	float4 specular = (spec * Ks);
 
 	return  (Ka * color) + (diffuse * color) + specular;
-	//return float4(input.Tangent, 0);
+	//return float4(input.Tangent, 1);
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
 	/*return float4(input.TexCoord, 0, 1);*/
 
