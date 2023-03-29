@@ -26,8 +26,8 @@ struct PSIn
 	float3 Normal : NORMAL;
 	float2 TexCoord : TEX;
 	float4 WorldPos : POSITION;
-	float4 Tangent : TANGENT;
-	float4 Binormal : BINORMAL;
+	float3 Tangent : TANGENT;
+	float3 Binormal : BINORMAL;
 };
 
 //-----------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ float4 PS_main(PSIn input) : SV_Target
 	float4 specular = (spec * Ks);
 
 	return  (Ka * color) + (diffuse * color) + specular;
-	
+	//return float4(input.Tangent, 0);
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
 	/*return float4(input.TexCoord, 0, 1);*/
 
