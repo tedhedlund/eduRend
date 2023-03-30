@@ -37,6 +37,23 @@ OurTestScene::OurTestScene(
 	InitLightAndCameraBuffer();
 	InitMaterialBuffer();
 	InitSamplerAniso();
+
+	D3D11_SAMPLER_DESC samplerdesc =
+	{
+		D3D11_FILTER_MIN_MAG_MIP_POINT,
+		D3D11_TEXTURE_ADDRESS_WRAP,
+		D3D11_TEXTURE_ADDRESS_WRAP,
+		D3D11_TEXTURE_ADDRESS_WRAP,
+		0.0f,
+		1,
+		D3D11_COMPARISON_NEVER,
+		{1.0f, 1.0f, 1.0f, 1.0f},
+		-FLT_MAX,
+		FLT_MAX,
+	};
+
+
+	dxdevice->CreateSamplerState(&samplerdesc, &samplerCube);
 	
 }
 
@@ -72,10 +89,13 @@ void OurTestScene::Init()
 	mirror.Ka = { 1, 1, 1 };
 	mirror.Kd = { 1, 1, 1 };
 	mirror.Ks = { 1, 1, 1 };
-	mirror.shininess = 2;
-	mirror.Kd_texture_filename = "assets/textures/brick_diffuse.png";
-	mirror.normal_texture_filename = "assets/textures/brick_bump.png";
-	mirror.specular_texture_filename = "assets/textures/brick_specular.png";
+	mirror.shininess = 16;
+	mirror.cube_filenames[0] = "assets/cubemaps/Skybox/Skybox-posx.png";
+	mirror.cube_filenames[1] = "assets/cubemaps/Skybox/Skybox-negx.png";
+	mirror.cube_filenames[2] = "assets/cubemaps/Skybox/Skybox-posy.png";
+	mirror.cube_filenames[3] = "assets/cubemaps/Skybox/Skybox-negy.png";
+	mirror.cube_filenames[4] = "assets/cubemaps/Skybox/Skybox-posz.png";
+	mirror.cube_filenames[5] = "assets/cubemaps/Skybox/Skybox-negz.png";
 
 	// Create objects
 	quad = new QuadModel(dxdevice, dxdevice_context);
@@ -85,6 +105,7 @@ void OurTestScene::Init()
 	cube1 = new Cube(dxdevice, dxdevice_context);
 	cube1->SetMaterial(red);
 	cube2 = new Cube(dxdevice, dxdevice_context);
+	cube2->cubeBool = true;
 	cube2->SetMaterial(mirror);
 	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", dxdevice, dxdevice_context);
 	/*spaceship = new OBJModel("assets/Spaceship/spaceship.obj", dxdevice, dxdevice_context);	*/
@@ -163,7 +184,7 @@ void OurTestScene::Update(
 	// Sponza model-to-world transformation
 	Msponza = mat4f::translation(0, -5, 0) *		 // Move down 5 units
 		mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) * // Rotate pi/2 radians (90 degrees) around y
-		mat4f::scaling(0.05f);						 // The scene is quite large so scale it down to 5%
+		mat4f::scaling(1.0f);						 // The scene is quite large so scale it down to 5%
 
 	Mspaceship = mat4f::translation(-7, 0, 0) *
 		mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *
@@ -203,6 +224,7 @@ void OurTestScene::Render()
 	dxdevice_context->PSSetConstantBuffers(0, 1, &lightandcamera_buffer);
 	dxdevice_context->PSSetConstantBuffers(1, 1, &mtl_buffer);
 	dxdevice_context->PSSetSamplers(0, 1, &sampler);
+	dxdevice_context->PSSetSamplers(1, 1, &samplerCube);
 
 	// Obtain the matrices needed for rendering from the camera
 	Mview = camera->get_WorldToViewMatrix();
@@ -251,6 +273,7 @@ void OurTestScene::Release()
 	SAFE_RELEASE(lightandcamera_buffer);
 	SAFE_RELEASE(mtl_buffer);
 	SAFE_RELEASE(sampler);
+	SAFE_RELEASE(samplerCube)
 }
 
 void OurTestScene::WindowResize(

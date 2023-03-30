@@ -467,9 +467,15 @@ void Cube::Render(std::function<void(vec4f Ka, vec4f Kd, vec4f Ks, float shinine
 		{
 			(bufferUpdate)(material->Ka.xyz1(), material->Kd.xyz1(), material->Ks.xyz1(), material->shininess);
 		}
-		dxdevice_context->PSSetShaderResources(0, 1, &material->diffuse_texture.texture_SRV);
-		dxdevice_context->PSSetShaderResources(1, 1, &material->normal_texture.texture_SRV);
-		dxdevice_context->PSSetShaderResources(2, 1, &material->specular_texture.texture_SRV);
+		if(cubeBool)
+		dxdevice_context->PSSetShaderResources(3, 1, &material->cube_texture.texture_SRV);
+		else 
+		{
+			dxdevice_context->PSSetShaderResources(0, 1, &material->diffuse_texture.texture_SRV);
+			dxdevice_context->PSSetShaderResources(1, 1, &material->normal_texture.texture_SRV);
+			dxdevice_context->PSSetShaderResources(2, 1, &material->specular_texture.texture_SRV);
+		}
+
 		
 	}
 

@@ -5,7 +5,11 @@ Texture2D texNormal : register (t1);
 
 Texture2D texSpecular : register(t2);
 
+TextureCube texCube : register(t3);
+
 SamplerState texSampler : register(s0);
+
+SamplerState cubeSampler : register(s1);
 
 cbuffer LightAndCameraBuffer : register(b0)
 {
@@ -65,8 +69,11 @@ float4 PS_main(PSIn input) : SV_Target
 	float4 specular = (spec * Ks);
 	float4 specularTexture = texSpecular.Sample(texSampler, input.TexCoord);
 
-	return  (Ka * color) + (diffuse * color) + (specular * specularTexture);
-	//return float4(specularTexture);
+	float4 cubeTexture =  texCube.Sample(cubeSampler, reflect(-viewDir, input.Normal));
+	//cubeTex
+
+	return  (Ka * color * cubeTexture) + (diffuse * color) + (specular * specularTexture);
+	//return float4(cubeTexture.xyz, 1);
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
 	/*return float4(input.TexCoord, 0, 1);*/
 

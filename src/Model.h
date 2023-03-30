@@ -33,6 +33,9 @@ protected:
 	ID3D11Buffer* index_buffer = nullptr;
 
 	Material* material;
+	//Texture cube_texture;
+	//std::string cube_filename;
+
 	
 public:
 	
@@ -43,7 +46,7 @@ public:
 			dxdevice_context(dxdevice_context)
 	{ 		
 	}
-
+	bool cubeBool = false;
 	//
 	// Abstract render method: must be implemented by derived classes
 	//
@@ -87,6 +90,16 @@ public:
 					&material->specular_texture);
 				std::cout << "\t" << material->specular_texture_filename
 					<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+			}
+
+			if(cubeBool) 
+			{
+				hr = LoadCubeTextureFromFile(
+					dxdevice,
+					material->cube_filenames,
+					&material->cube_texture);
+				if (SUCCEEDED(hr)) std::cout << "Cubemap OK" << std::endl;
+				else std::cout << "Cubemap failed to load" << std::endl;
 			}
 		
 	}

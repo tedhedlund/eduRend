@@ -43,12 +43,24 @@ struct Material
 	std::string normal_texture_filename;
 	std::string specular_texture_filename;
 	// + more texture types (extend OBJLoader::LoadMaterials if needed)
+	
+	const char* cube_filenames[6]; /*=
+		{
+			"assets/cubemaps/Skybox-posx",
+			"assets/cubemaps/Skybox-negx",
+			"assets/cubemaps/Skybox-posy",
+			"assets/cubemaps/Skybox-negy",
+			"assets/cubemaps/Skybox-posz",
+			"assets/cubemaps/Skybox-negz"
+		};
+	*/
 
 	// Device textures
 	Texture diffuse_texture;
 	Texture normal_texture;
 	Texture specular_texture;
 	// + other texture types
+	Texture cube_texture;
 };
 
 static Material DefaultMaterial = Material();
