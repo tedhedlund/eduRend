@@ -52,8 +52,8 @@ OurTestScene::OurTestScene(
 		FLT_MAX,
 	};
 
-
 	dxdevice->CreateSamplerState(&samplerdesc, &samplerCube);
+	dxdevice->CreateSamplerState(&samplerdesc, &samplerSpec);
 	
 }
 
@@ -225,6 +225,7 @@ void OurTestScene::Render()
 	dxdevice_context->PSSetConstantBuffers(1, 1, &mtl_buffer);
 	dxdevice_context->PSSetSamplers(0, 1, &sampler);
 	dxdevice_context->PSSetSamplers(1, 1, &samplerCube);
+	dxdevice_context->PSSetSamplers(2, 1, &samplerSpec);
 
 	// Obtain the matrices needed for rendering from the camera
 	Mview = camera->get_WorldToViewMatrix();
@@ -273,7 +274,8 @@ void OurTestScene::Release()
 	SAFE_RELEASE(lightandcamera_buffer);
 	SAFE_RELEASE(mtl_buffer);
 	SAFE_RELEASE(sampler);
-	SAFE_RELEASE(samplerCube)
+	SAFE_RELEASE(samplerCube);
+	SAFE_RELEASE(samplerSpec);
 }
 
 void OurTestScene::WindowResize(

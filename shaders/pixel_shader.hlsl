@@ -11,6 +11,8 @@ SamplerState texSampler : register(s0);
 
 SamplerState cubeSampler : register(s1);
 
+SamplerState specSampler : register(s2);
+
 cbuffer LightAndCameraBuffer : register(b0)
 {
 	float4 lightposition;
@@ -67,13 +69,17 @@ float4 PS_main(PSIn input) : SV_Target
 	float3 reflectDir = reflect(-lightDir, norm);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 50);
 	float4 specular = (spec * Ks);
-	float4 specularTexture = texSpecular.Sample(texSampler, input.TexCoord);
+	float4 specularTexture = texSpecular.Sample(specSampler, input.TexCoord);
 
-	float4 cubeTexture =  texCube.Sample(cubeSampler, reflect(-viewDir, input.Normal));
+	float3 viewVector = normalize(input.WorldPos.xyz - cameraposition.xyz);
+	float4 cubeTexture =  texCube.Sample(cubeSampler, reflect(viewVector, mappedNormal));
+	//float4 cubeTexture =  texCube.Sample(cubeSampler, reflect(-viewDir, input.Normal));
 	//cubeTex
 
-	return  (Ka * color * cubeTexture) + (diffuse * color) + (specular * specularTexture);
+	//return  (Ka * color) + (diffuse * color) + (specular) + (cubeTexture * 0.25);
+	return  ((Ka * color) + (diffuse * color) + (specular)) * (cubeTexture * 1.5);
 	//return float4(cubeTexture.xyz, 1);
+	//return float4(specularTexture.xyz, 1);
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
 	/*return float4(input.TexCoord, 0, 1);*/
 

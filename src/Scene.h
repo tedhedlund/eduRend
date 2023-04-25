@@ -61,6 +61,7 @@ class OurTestScene : public Scene
 	ID3D11Buffer* mtl_buffer = nullptr; //Updated per frame and object
 	ID3D11SamplerState* sampler = nullptr; //sampler
 	ID3D11SamplerState* samplerCube = nullptr; //sampler
+	ID3D11SamplerState* samplerSpec = nullptr; //sampler
 
 
 
