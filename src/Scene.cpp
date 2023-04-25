@@ -176,9 +176,9 @@ void OurTestScene::Update(
 		mat4f::rotation(0.0f, 0.0f, 0.0f) *
 		mat4f::scaling(0.5, 0.5, 0.5);
 
-	Mcube2 = Mcube1 * mat4f::translation(std::cos(angle) * 1.5, std::sin(angle) * 1.5, 1) *
-		mat4f::rotation(angle, 1.0f, 0.0f, 0.0f) *
-		mat4f::scaling(1.5, 1.5, 1.5);
+	Mcube2 =mat4f::translation(0 ,0 ,0) *
+		mat4f::rotation(0.0f, 0.0f, 0.0f) *
+		mat4f::scaling(10, 10, 10);
 
 
 	// Sponza model-to-world transformation
