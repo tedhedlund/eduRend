@@ -78,7 +78,7 @@ float4 PS_main(PSIn input) : SV_Target
 
 	//return  (Ka * color) + (diffuse * color) + (specular) + (cubeTexture * 0.25);
 	return  ((Ka * color) + (diffuse * color) + (specular)) * (cubeTexture * 1.5);
-	//return float4(cubeTexture.xyz, 1);
+    //return float4(cubeTexture.xyz, 1);
 	//return float4(specularTexture.xyz, 1);
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
 	/*return float4(input.TexCoord, 0, 1);*/

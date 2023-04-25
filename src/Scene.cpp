@@ -86,9 +86,9 @@ void OurTestScene::Init()
 	red.shininess = 8;
 
 	Material mirror;
-	mirror.Ka = { 1, 1, 1 };
-	mirror.Kd = { 1, 1, 1 };
-	mirror.Ks = { 1, 1, 1 };
+	mirror.Ka = { 0.5, 0.5, 0.5 };
+	mirror.Kd = { 0.5, 0.5, 0.5 };
+	mirror.Ks = { 0.5, 0.5, 0.5 };
 	mirror.shininess = 16;
 	mirror.cube_filenames[0] = "assets/cubemaps/Skybox/Skybox-posx.png";
 	mirror.cube_filenames[1] = "assets/cubemaps/Skybox/Skybox-negx.png";
@@ -108,7 +108,7 @@ void OurTestScene::Init()
 	cube2->cubeBool = true;
 	cube2->SetMaterial(mirror);
 	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", dxdevice, dxdevice_context);
-	/*spaceship = new OBJModel("assets/Spaceship/spaceship.obj", dxdevice, dxdevice_context);	*/
+	spaceship = new OBJModel("assets/sphere/sphere.obj", dxdevice, dxdevice_context);
 }
 
 //
@@ -188,7 +188,7 @@ void OurTestScene::Update(
 
 	Mspaceship = mat4f::translation(-7, 0, 0) *
 		mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *
-		mat4f::scaling(0.2f, 0.2f, 0.2f);
+		mat4f::scaling(1.0f, 1.0f, 1.0f);
 
 	// Increment the rotation angle.
 	angle += angle_vel * dt;
@@ -202,7 +202,7 @@ void OurTestScene::Update(
 		fps_cooldown = 2.0;
 	}
 	
-	light.x += std::cos(angle) * 2;
+	//light.x += std::cos(angle) * 2;
 
 	if (input_handler->IsKeyPressed(Keys::F))
 		InitSamplerPoint();
@@ -246,13 +246,13 @@ void OurTestScene::Render()
 	UpdateTransformationBuffer(Mcube2, Mview, Mproj);
 	cube2->Render(phongFunction);
 	
-	/*UpdateTransformationBuffer(Mspaceship, Mview, Mproj);
-	spaceship->Render(phongFunction);*/
+	UpdateTransformationBuffer(Mspaceship, Mview, Mproj);
+	spaceship->Render(phongFunction);
 
 	// Load matrices + Sponza's transformation to the device and render it
 	UpdateTransformationBuffer(Msponza, Mview, Mproj);
 	sponza->Render(phongFunction);
-	
+
 	UpdateLightAndCameraBuffer(light, camera->position.xyz0());
 
 	/*UpdateMaterialBuffer(materials[0].Ka.xyz1, materials[0].Kd, materials[0].Ks, 32);*/
