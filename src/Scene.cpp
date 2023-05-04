@@ -83,7 +83,7 @@ void OurTestScene::Init()
 	red.Ka = { 1, 0, 0 };
 	red.Kd = { 1, 0, 0 };
 	red.Ks = { 0.5, 0.5, 0.5 };
-	red.shininess = 8;
+	red.shininess = 16;
 
 	Material mirror;
 	mirror.Ka = { 0.5, 0.5, 0.5 };
@@ -108,7 +108,7 @@ void OurTestScene::Init()
 	cube2->cubeBool = true;
 	cube2->SetMaterial(mirror);
 	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", dxdevice, dxdevice_context);
-	spaceship = new OBJModel("assets/sphere/sphere.obj", dxdevice, dxdevice_context);
+	spaceship = new OBJModel("assets/hand/hand.obj", dxdevice, dxdevice_context);
 }
 
 //
@@ -188,7 +188,7 @@ void OurTestScene::Update(
 
 	Mspaceship = mat4f::translation(-7, 0, 0) *
 		mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *
-		mat4f::scaling(1.0f, 1.0f, 1.0f);
+		mat4f::scaling(3.0f, 3.0f, 3.0f);
 
 	// Increment the rotation angle.
 	angle += angle_vel * dt;

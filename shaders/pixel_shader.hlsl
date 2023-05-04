@@ -67,7 +67,7 @@ float4 PS_main(PSIn input) : SV_Target
 	// specular
 	float3 viewDir = normalize(cameraposition.xyz - input.WorldPos.xyz);
 	float3 reflectDir = reflect(-lightDir, norm);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 50);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	float4 specular = (spec * Ks);
 	float4 specularTexture = texSpecular.Sample(specSampler, input.TexCoord);
 
@@ -77,7 +77,7 @@ float4 PS_main(PSIn input) : SV_Target
 	//cubeTex
 
 	//return  (Ka * color) + (diffuse * color) + (specular) + (cubeTexture * 0.25);
-	return  ((Ka * color) + (diffuse * color) + (specular)) * (cubeTexture * 1.5);
+	return  ((Ka * color) + (diffuse * color) + (specular)) * (cubeTexture);
     //return float4(cubeTexture.xyz, 1);
 	//return float4(specularTexture.xyz, 1);
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
