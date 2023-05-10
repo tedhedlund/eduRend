@@ -178,7 +178,7 @@ void OurTestScene::Update(
 
 	Mcube2 =mat4f::translation(0 ,0 ,0) *
 		mat4f::rotation(0.0f, 0.0f, 0.0f) *
-		mat4f::scaling(10, 10, 10);
+		mat4f::scaling(700, 700, 700);
 
 
 	// Sponza model-to-world transformation
@@ -188,7 +188,7 @@ void OurTestScene::Update(
 
 	Mspaceship = mat4f::translation(-7, 0, 0) *
 		mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *
-		mat4f::scaling(3.0f, 3.0f, 3.0f);
+		mat4f::scaling(10.0f, 10.0f, 10.0f);
 
 	// Increment the rotation angle.
 	angle += angle_vel * dt;
